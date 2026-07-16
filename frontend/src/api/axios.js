@@ -39,7 +39,7 @@ api.interceptors.request.use(
         return Promise.reject({ __isMock: true, response: { data: mockResponse, status: 200, statusText: 'OK', headers: {}, config } });
       }
     }
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('campusride_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -57,7 +57,7 @@ api.interceptors.response.use(
     const message = error.response?.data?.message || 'Something went wrong';
     
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('campusride_token');
       window.location.href = '/login';
     }
     
