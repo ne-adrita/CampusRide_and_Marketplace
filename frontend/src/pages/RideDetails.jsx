@@ -20,7 +20,10 @@ const RideDetails = () => {
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
 
-  useEffect(() => { fetchRide(); }, [id]);
+  useEffect(() => {
+    fetchRide();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const fetchRide = async () => {
     setLoading(true);

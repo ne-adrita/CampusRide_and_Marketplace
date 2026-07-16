@@ -24,6 +24,7 @@ const Profile = () => {
     const userId = id || user?.user_id;
     if (!userId) { navigate('/login'); return; }
     fetchProfile(userId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user]);
 
   const fetchProfile = async (userId) => {

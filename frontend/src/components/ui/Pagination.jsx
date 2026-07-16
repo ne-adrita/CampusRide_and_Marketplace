@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -7,7 +8,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const getPageNumbers = () => {
     const pages = [];
     const showEllipsis = totalPages > 7;
-    
+
     if (!showEllipsis) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
       return pages;
@@ -15,14 +16,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
     pages.push(1);
     if (currentPage > 3) pages.push('...');
-    
+
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
     for (let i = start; i <= end; i++) pages.push(i);
-    
+
     if (currentPage < totalPages - 2) pages.push('...');
     pages.push(totalPages);
-    
+
     return pages;
   };
 
@@ -60,6 +61,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </button>
     </nav>
   );
+};
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 };
 
 export default Pagination;

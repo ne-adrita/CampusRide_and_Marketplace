@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FaSearch } from 'react-icons/fa';
 
 const RideFilters = ({ filters, onFilterChange, onClearFilters }) => {
@@ -74,6 +75,19 @@ const RideFilters = ({ filters, onFilterChange, onClearFilters }) => {
       </div>
     </div>
   );
+};
+
+RideFilters.propTypes = {
+  filters: PropTypes.shape({
+    search: PropTypes.string,
+    origin: PropTypes.string,
+    destination: PropTypes.string,
+    date: PropTypes.string,
+    maxPrice: PropTypes.string,
+    sort: PropTypes.string,
+  }),
+  onFilterChange: PropTypes.func.isRequired,
+  onClearFilters: PropTypes.func.isRequired,
 };
 
 export default RideFilters;

@@ -1,16 +1,14 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import toast from 'react-hot-toast';
 import * as authService from '../services/authService';
-import { initData, resetAllData } from '../data';
-
-const IS_PREVIEW = import.meta.env.VITE_PREVIEW_MODE === 'true';
+import { initData, resetAllData, getToken, IS_PREVIEW } from '../data';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('campusride_token'));
 
   useEffect(() => {
     if (IS_PREVIEW) {
@@ -21,11 +19,12 @@ export const AuthProvider = ({ children }) => {
       });
       return;
     }
-    if (token) {
+    if (getToken()) {
       loadUser();
     } else {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUser = async () => {
@@ -43,7 +42,6 @@ export const AuthProvider = ({ children }) => {
     const result = await authService.login(email, password);
     if (result.success) {
       const userData = { ...result.data.user, user_id: result.data.user.user_id || result.data.user._id || result.data.user.id };
-      setToken(result.data.token);
       setUser(userData);
       toast.success('Welcome back!');
     }
@@ -54,7 +52,6 @@ export const AuthProvider = ({ children }) => {
     const result = await authService.register(name, email, studentId, password);
     if (result.success) {
       const userData = { ...result.data.user, user_id: result.data.user.user_id || result.data.user._id || result.data.user.id };
-      setToken(result.data.token);
       setUser(userData);
       toast.success('Registration successful!');
     }
@@ -63,7 +60,6 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('campusride_token');
-    setToken(null);
     setUser(null);
     toast.success('Logged out successfully');
   };
@@ -90,6 +86,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node,
 };
 
 export const useAuth = () => {

@@ -1,10 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import Card from '../ui/Card';
-import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import Rating from '../ui/Rating';
-import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaCar } from 'react-icons/fa';
+import { FaCalendarAlt, FaUsers, FaCar } from 'react-icons/fa';
 import { format } from 'date-fns';
 
 const RideCard = ({ ride }) => {
@@ -84,6 +83,21 @@ const RideCard = ({ ride }) => {
       )}
     </div>
   );
+};
+
+RideCard.propTypes = {
+  ride: PropTypes.shape({
+    ride_id: PropTypes.string,
+    driver_name: PropTypes.string,
+    driver_rating: PropTypes.number,
+    vehicle_details: PropTypes.string,
+    fare_per_seat: PropTypes.number,
+    origin: PropTypes.string,
+    destination: PropTypes.string,
+    date_time: PropTypes.string,
+    seats_available: PropTypes.number,
+    seats_total: PropTypes.number,
+  }),
 };
 
 export default RideCard;

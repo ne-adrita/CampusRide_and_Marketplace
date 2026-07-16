@@ -1,6 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Rating from '../ui/Rating';
 import Avatar from '../ui/Avatar';
@@ -8,6 +8,7 @@ import { FaHeart, FaRegHeart, FaMapMarkerAlt } from 'react-icons/fa';
 import { addToWishlist, removeFromWishlist } from '../../services/wishlistService';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { formatTimeAgo } from '../../data';
 
 const ProductCard = ({ product }) => {
   const { isAuthenticated } = useAuth();
@@ -33,22 +34,13 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  const timeAgo = product.created_at
-    ? (() => {
-        const diff = Date.now() - new Date(product.created_at).getTime();
-        const hrs = Math.floor(diff / 3600000);
-        if (hrs < 1) return 'Just now';
-        if (hrs < 24) return `${hrs}h ago`;
-        const days = Math.floor(hrs / 24);
-        return `${days}d ago`;
-      })()
-    : null;
+  const timeAgo = formatTimeAgo(product.created_at);
 
   return (
     <div className="surface-card-hover overflow-hidden group cursor-pointer relative" onClick={() => navigate(`/product/${product.product_id}`)}>
       <div className="aspect-[4/3] bg-navy-100 overflow-hidden relative">
         {product.image ? (
-          <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-navy-300">No image</div>'; }} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-navy-300">No image</div>
         )}
@@ -89,6 +81,21 @@ const ProductCard = ({ product }) => {
       </div>
     </div>
   );
+};
+
+ProductCard.propTypes = {
+  product: PropTypes.shape({
+    product_id: PropTypes.string,
+    title: PropTypes.string,
+    price: PropTypes.number,
+    condition: PropTypes.string,
+    image: PropTypes.string,
+    location: PropTypes.string,
+    created_at: PropTypes.string,
+    seller_name: PropTypes.string,
+    seller_rating: PropTypes.number,
+    is_wishlisted: PropTypes.bool,
+  }),
 };
 
 export default ProductCard;

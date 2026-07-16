@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Avatar = ({ name, src = null, size = 'md', className = '' }) => {
   const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-14 h-14 text-lg', xl: 'w-20 h-20 text-2xl' };
@@ -13,6 +14,13 @@ const Avatar = ({ name, src = null, size = 'md', className = '' }) => {
       {initials}
     </div>
   );
+};
+
+Avatar.propTypes = {
+  name: PropTypes.string,
+  src: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default Avatar;

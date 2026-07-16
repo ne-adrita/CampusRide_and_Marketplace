@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Card = ({ children, className = '', hoverable = false }) => {
   return (
@@ -8,17 +9,38 @@ const Card = ({ children, className = '', hoverable = false }) => {
   );
 };
 
+Card.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+  hoverable: PropTypes.bool,
+};
+
 const CardHeader = ({ children, className = '' }) => (
   <div className={`px-6 py-4 border-b border-gray-100 ${className}`}>{children}</div>
 );
+
+CardHeader.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
 
 const CardBody = ({ children, className = '' }) => (
   <div className={`px-6 py-4 ${className}`}>{children}</div>
 );
 
+CardBody.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
+
 const CardFooter = ({ children, className = '' }) => (
   <div className={`px-6 py-4 border-t border-gray-100 ${className}`}>{children}</div>
 );
+
+CardFooter.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+};
 
 Card.Header = CardHeader;
 Card.Body = CardBody;

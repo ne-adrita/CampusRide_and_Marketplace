@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FaSearch } from 'react-icons/fa';
 
 const ProductFilters = ({ filters, categories = [], onFilterChange, onClearFilters }) => {
@@ -83,6 +84,24 @@ const ProductFilters = ({ filters, categories = [], onFilterChange, onClearFilte
       </div>
     </div>
   );
+};
+
+ProductFilters.propTypes = {
+  filters: PropTypes.shape({
+    search: PropTypes.string,
+    category: PropTypes.string,
+    condition: PropTypes.string,
+    minPrice: PropTypes.string,
+    maxPrice: PropTypes.string,
+    sort: PropTypes.string,
+    location: PropTypes.string,
+  }),
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    category_id: PropTypes.string,
+    name: PropTypes.string,
+  })),
+  onFilterChange: PropTypes.func.isRequired,
+  onClearFilters: PropTypes.func.isRequired,
 };
 
 export default ProductFilters;

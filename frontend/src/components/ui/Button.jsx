@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Button = ({ children, variant = 'primary', size = 'md', className = '', isLoading = false, disabled = false, ...props }) => {
   const variants = {
@@ -19,6 +20,15 @@ const Button = ({ children, variant = 'primary', size = 'md', className = '', is
       <span>{children}</span>
     </button>
   );
+};
+
+Button.propTypes = {
+  children: PropTypes.node,
+  variant: PropTypes.string,
+  size: PropTypes.string,
+  className: PropTypes.string,
+  isLoading: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 export default Button;

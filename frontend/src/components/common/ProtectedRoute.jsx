@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
@@ -12,6 +13,11 @@ const ProtectedRoute = ({ requireVerified = false, requireAdmin = false }) => {
   if (requireAdmin && !isAdmin) return <Navigate to="/dashboard" replace />;
 
   return <Outlet />;
+};
+
+ProtectedRoute.propTypes = {
+  requireVerified: PropTypes.bool,
+  requireAdmin: PropTypes.bool,
 };
 
 export default ProtectedRoute;

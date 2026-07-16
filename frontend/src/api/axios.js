@@ -25,20 +25,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  async (config) => {
-    if (IS_PREVIEW) {
-      const { handleMockRequest } = await import('./mockData');
-      const mockResponse = handleMockRequest(config);
-      if (mockResponse) {
-        if (mockResponse.status === 404) {
-          return Promise.reject({ __isMock: true, response: { data: mockResponse.data, status: 404, statusText: 'Not Found', headers: {}, config } });
-        }
-        if (mockResponse.status === 400) {
-          return Promise.reject({ __isMock: true, response: { data: mockResponse.data, status: 400, statusText: 'Bad Request', headers: {}, config } });
-        }
-        return Promise.reject({ __isMock: true, response: { data: mockResponse, status: 200, statusText: 'OK', headers: {}, config } });
-      }
-    }
+  (config) => {
     const token = localStorage.getItem('campusride_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -51,16 +38,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.__isMock) return error.response;
     if (!error.response) return Promise.reject(error);
-    
+
     const message = error.response?.data?.message || 'Something went wrong';
-    
+
     if (error.response?.status === 401) {
       localStorage.removeItem('campusride_token');
       window.location.href = '/login';
     }
-    
+
     toast.error(message);
     return Promise.reject(error);
   }

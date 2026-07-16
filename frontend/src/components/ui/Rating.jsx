@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 const Rating = ({ value, max = 5, size = 'md', showValue = false }) => {
@@ -18,6 +19,13 @@ const Rating = ({ value, max = 5, size = 'md', showValue = false }) => {
       {showValue && <span className="text-gray-600 text-sm font-medium ml-1">{value.toFixed(1)}</span>}
     </div>
   );
+};
+
+Rating.propTypes = {
+  value: PropTypes.number,
+  max: PropTypes.number,
+  size: PropTypes.string,
+  showValue: PropTypes.bool,
 };
 
 export default Rating;

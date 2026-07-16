@@ -1,4 +1,7 @@
 const STORAGE_PREFIX = 'campusride_';
+const IS_PREVIEW = import.meta.env.VITE_PREVIEW_MODE === 'true';
+
+export { IS_PREVIEW };
 
 export function loadJSON(key, fallback) {
   try {
@@ -9,6 +12,14 @@ export function loadJSON(key, fallback) {
 
 export function saveJSON(key, data) {
   localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(data));
+}
+
+export function saveToken(token) {
+  localStorage.setItem(STORAGE_PREFIX + 'token', token);
+}
+
+export function getToken() {
+  return localStorage.getItem(STORAGE_PREFIX + 'token');
 }
 
 const now = new Date();
@@ -47,18 +58,18 @@ export const seedCategories = [
 ];
 
 export const seedProducts = [
-  { product_id: 'prod_1', title: 'MacBook Air M1 (2020)', price: 720, condition: 'Like New', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Used for one semester. Mint condition, original box included.', location: 'NSU Campus', category_id: 'cat_1', image: null, created_at: p(2).toISOString() },
-  { product_id: 'prod_2', title: 'Calculus Textbook — Stewart 8th Ed.', price: 25, condition: 'Good', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'Some highlights, overall good condition.', location: 'Dhanmondi', category_id: 'cat_2', image: null, created_at: p(5).toISOString() },
-  { product_id: 'prod_3', title: 'IKEA Study Desk', price: 65, condition: 'Good', seller_id: 'user_003', seller_name: 'Rafiq Hasan', seller_rating: 4.2, seller_verified: false, description: 'Adjustable height, sturdy build.', location: 'Bashundhara', category_id: 'cat_3', image: null, created_at: p(24).toISOString() },
-  { product_id: 'prod_4', title: 'Sony WH-1000XM4 Headphones', price: 190, condition: 'Like New', seller_id: 'user_004', seller_name: 'Priya Sharma', seller_rating: 4.9, seller_verified: true, description: 'Used twice. Amazing noise cancellation.', location: 'Gulshan', category_id: 'cat_1', image: null, created_at: p(72).toISOString() },
-  { product_id: 'prod_5', title: 'Yoga Mat Premium 6mm', price: 35, condition: 'Good', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Non-slip, used for 3 months.', location: 'Dhanmondi', category_id: 'cat_5', image: null, created_at: p(48).toISOString() },
-  { product_id: 'prod_6', title: 'Principles of Microeconomics', price: 30, condition: 'Fair', seller_id: 'user_005', seller_name: 'Emily Watson', seller_rating: 4.0, seller_verified: true, description: 'Worn cover, all pages intact.', location: 'Mohammadpur', category_id: 'cat_2', image: null, created_at: p(96).toISOString() },
-  { product_id: 'prod_7', title: 'Graphic T-Shirt Bundle (5 pcs)', price: 60, condition: 'Good', seller_id: 'user_003', seller_name: 'Rafiq Hasan', seller_rating: 4.2, seller_verified: false, description: 'Size M, premium cotton.', location: 'Uttara', category_id: 'cat_4', image: null, created_at: p(36).toISOString() },
-  { product_id: 'prod_8', title: 'iPad Air + Pencil 2nd Gen', price: 550, condition: 'Like New', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'M1 chip, great for note-taking.', location: 'Gulshan', category_id: 'cat_1', image: null, created_at: p(12).toISOString() },
-  { product_id: 'prod_9', title: 'Ergonomic Office Chair', price: 120, condition: 'Good', seller_id: 'user_005', seller_name: 'Emily Watson', seller_rating: 4.0, seller_verified: true, description: 'Adjustable lumbar support.', location: 'Mohammadpur', category_id: 'cat_3', image: null, created_at: p(60).toISOString() },
-  { product_id: 'prod_10', title: 'North Face Winter Jacket', price: 150, condition: 'New', seller_id: 'user_004', seller_name: 'Priya Sharma', seller_rating: 4.9, seller_verified: true, description: 'Never worn, wrong size (L, need M).', location: 'Banani', category_id: 'cat_4', image: null, created_at: p(8).toISOString() },
-  { product_id: 'prod_11', title: 'Arduino Starter Kit', price: 65, condition: 'Good', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Complete with sensors and guide.', location: 'Dhanmondi', category_id: 'cat_1', image: null, created_at: p(16).toISOString() },
-  { product_id: 'prod_12', title: 'Spalding Basketball', price: 40, condition: 'Fair', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'Indoor/outdoor, some wear.', location: 'Gulshan', category_id: 'cat_5', image: null, created_at: p(84).toISOString() },
+  { product_id: 'prod_1', title: 'MacBook Air M1 (2020)', price: 720, condition: 'Like New', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Used for one semester. Mint condition, original box included.', location: 'NSU Campus', category_id: 'cat_1', image: 'https://picsum.photos/seed/prod1/600/400', created_at: p(2).toISOString() },
+  { product_id: 'prod_2', title: 'Calculus Textbook — Stewart 8th Ed.', price: 25, condition: 'Good', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'Some highlights, overall good condition.', location: 'Dhanmondi', category_id: 'cat_2', image: 'https://picsum.photos/seed/prod2/600/400', created_at: p(5).toISOString() },
+  { product_id: 'prod_3', title: 'IKEA Study Desk', price: 65, condition: 'Good', seller_id: 'user_003', seller_name: 'Rafiq Hasan', seller_rating: 4.2, seller_verified: false, description: 'Adjustable height, sturdy build.', location: 'Bashundhara', category_id: 'cat_3', image: 'https://picsum.photos/seed/prod3/600/400', created_at: p(24).toISOString() },
+  { product_id: 'prod_4', title: 'Sony WH-1000XM4 Headphones', price: 190, condition: 'Like New', seller_id: 'user_004', seller_name: 'Priya Sharma', seller_rating: 4.9, seller_verified: true, description: 'Used twice. Amazing noise cancellation.', location: 'Gulshan', category_id: 'cat_1', image: 'https://picsum.photos/seed/prod4/600/400', created_at: p(72).toISOString() },
+  { product_id: 'prod_5', title: 'Yoga Mat Premium 6mm', price: 35, condition: 'Good', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Non-slip, used for 3 months.', location: 'Dhanmondi', category_id: 'cat_5', image: 'https://picsum.photos/seed/prod5/600/400', created_at: p(48).toISOString() },
+  { product_id: 'prod_6', title: 'Principles of Microeconomics', price: 30, condition: 'Fair', seller_id: 'user_005', seller_name: 'Emily Watson', seller_rating: 4.0, seller_verified: true, description: 'Worn cover, all pages intact.', location: 'Mohammadpur', category_id: 'cat_2', image: 'https://picsum.photos/seed/prod6/600/400', created_at: p(96).toISOString() },
+  { product_id: 'prod_7', title: 'Graphic T-Shirt Bundle (5 pcs)', price: 60, condition: 'Good', seller_id: 'user_003', seller_name: 'Rafiq Hasan', seller_rating: 4.2, seller_verified: false, description: 'Size M, premium cotton.', location: 'Uttara', category_id: 'cat_4', image: 'https://picsum.photos/seed/prod7/600/400', created_at: p(36).toISOString() },
+  { product_id: 'prod_8', title: 'iPad Air + Pencil 2nd Gen', price: 550, condition: 'Like New', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'M1 chip, great for note-taking.', location: 'Gulshan', category_id: 'cat_1', image: 'https://picsum.photos/seed/prod8/600/400', created_at: p(12).toISOString() },
+  { product_id: 'prod_9', title: 'Ergonomic Office Chair', price: 120, condition: 'Good', seller_id: 'user_005', seller_name: 'Emily Watson', seller_rating: 4.0, seller_verified: true, description: 'Adjustable lumbar support.', location: 'Mohammadpur', category_id: 'cat_3', image: 'https://picsum.photos/seed/prod9/600/400', created_at: p(60).toISOString() },
+  { product_id: 'prod_10', title: 'North Face Winter Jacket', price: 150, condition: 'New', seller_id: 'user_004', seller_name: 'Priya Sharma', seller_rating: 4.9, seller_verified: true, description: 'Never worn, wrong size (L, need M).', location: 'Banani', category_id: 'cat_4', image: 'https://picsum.photos/seed/prod10/600/400', created_at: p(8).toISOString() },
+  { product_id: 'prod_11', title: 'Arduino Starter Kit', price: 65, condition: 'Good', seller_id: 'user_001', seller_name: 'Alex Student', seller_rating: 4.8, seller_verified: true, description: 'Complete with sensors and guide.', location: 'Dhanmondi', category_id: 'cat_1', image: 'https://picsum.photos/seed/prod11/600/400', created_at: p(16).toISOString() },
+  { product_id: 'prod_12', title: 'Spalding Basketball', price: 40, condition: 'Fair', seller_id: 'user_002', seller_name: 'Sarah Chen', seller_rating: 4.5, seller_verified: true, description: 'Indoor/outdoor, some wear.', location: 'Gulshan', category_id: 'cat_5', image: 'https://picsum.photos/seed/prod12/600/400', created_at: p(84).toISOString() },
 ];
 
 export const seedRides = [
@@ -89,6 +100,45 @@ export const seedMessages = {
 };
 
 export const seedWishlist = ['prod_4', 'prod_8'];
+
+export const landingFeatured = [
+  { product_id: 'fp1', title: 'MacBook Air M1 (2020)', price: 720, condition: 'Like New', image: 'https://picsum.photos/seed/landing1/600/400', location: 'NSU Campus', created_at: p(2).toISOString(), seller_name: 'Aiman Rahman', seller_id: 'user_f1', seller_rating: 4.9 },
+  { product_id: 'fp2', title: 'Calculus Textbook — Stewart 8th Ed.', price: 25, condition: 'Good', image: 'https://picsum.photos/seed/landing2/600/400', location: 'Dhanmondi', created_at: p(5).toISOString(), seller_name: 'Sadia Islam', seller_id: 'user_f2', seller_rating: 4.7 },
+  { product_id: 'fp3', title: 'IKEA Study Desk', price: 65, condition: 'Good', image: 'https://picsum.photos/seed/landing3/600/400', location: 'Bashundhara', created_at: p(24).toISOString(), seller_name: 'Rifat Hasan', seller_id: 'user_f3', seller_rating: 4.8 },
+  { product_id: 'fp4', title: 'Sony WH-1000XM4 Headphones', price: 190, condition: 'Like New', image: 'https://picsum.photos/seed/landing4/600/400', location: 'Gulshan', created_at: p(72).toISOString(), seller_name: 'Nusrat Jahan', seller_id: 'user_f4', seller_rating: 5.0 },
+];
+
+export const landingTrendingItems = [
+  { id: 't1', title: 'MacBook Air M1 (2020)', price: '$720', image: 'https://picsum.photos/seed/trend1/600/400', badge: 'Trending' },
+  { id: 't2', title: 'Calculus Textbook — Stewart 8th Ed.', price: '$25', image: 'https://picsum.photos/seed/trend2/600/400', badge: 'Popular' },
+];
+
+export const landingTrendingRide = {
+  id: 'tr1', origin: 'NSU Campus', destination: 'Dhanmondi 27', time: 'Today · 5:30 PM', seats: '2 seats', fare: '$3',
+};
+
+export const landingCampusRides = [
+  { ride_id: 'fr1', driver_name: 'Rifat Hasan', driver_id: 'user_f3', driver_rating: 4.9, vehicle_details: 'Toyota Axio', fare_per_seat: 3, origin: 'NSU Campus', destination: 'Dhanmondi 27', date_time: t(4).toISOString(), seats_available: 2, seats_total: 3 },
+  { ride_id: 'fr2', driver_name: 'Sadia Islam', driver_id: 'user_f2', driver_rating: 4.7, vehicle_details: 'Honda Civic', fare_per_seat: 2, origin: 'Bashundhara Gate', destination: 'NSU Campus', date_time: t(20).toISOString(), seats_available: 3, seats_total: 4 },
+  { ride_id: 'fr3', driver_name: 'Aiman Rahman', driver_id: 'user_f1', driver_rating: 5.0, vehicle_details: 'Toyota Premio', fare_per_seat: 4, origin: 'NSU Campus', destination: 'Gulshan 2', date_time: t(6).toISOString(), seats_available: 1, seats_total: 3 },
+];
+
+export const landingTestimonials = [
+  { name: 'Sadia Islam', dept: 'CSE, NSU', text: "I sold my old textbooks in a day and picked up a study desk for half price. Life saver during finals.", avatar: null },
+  { name: 'Rifat Hasan', dept: 'BBA, NSU', text: "Offering rides on my daily commute pays for my fuel. Made friends across departments too.", avatar: null },
+  { name: 'Nusrat Jahan', dept: 'EEE, NSU', text: "The verified badges make it feel safe. I never worry about who I'm meeting on campus.", avatar: null },
+];
+
+export function formatTimeAgo(dateString) {
+  if (!dateString) return null;
+  const now = Date.now();
+  const diff = now - new Date(dateString).getTime();
+  const hrs = Math.floor(diff / 3600000);
+  if (hrs < 1) return 'Just now';
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
 
 const ALL_KEYS = ['currentUser', 'users', 'categories', 'products', 'rides', 'conversations', 'messages', 'wishlist', 'token', 'counter'];
 

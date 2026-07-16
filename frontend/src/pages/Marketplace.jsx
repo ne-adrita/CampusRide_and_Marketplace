@@ -15,7 +15,10 @@ const Marketplace = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => { fetchCategories(); }, []);
-  useEffect(() => { fetchProducts(); }, [filters, pagination.page]);
+  useEffect(() => {
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, pagination.page]);
 
   const fetchCategories = async () => {
     try {

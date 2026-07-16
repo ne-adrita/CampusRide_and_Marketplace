@@ -13,7 +13,10 @@ const Rides = () => {
   const [filters, setFilters] = useState({ search: '', origin: '', destination: '', date: '', maxPrice: '', sort: 'newest' });
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
 
-  useEffect(() => { fetchRides(); }, [filters, pagination.page]);
+  useEffect(() => {
+    fetchRides();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, pagination.page]);
 
   const fetchRides = async () => {
     setLoading(true);

@@ -5,13 +5,13 @@ import { FaShieldAlt, FaComment, FaStar, FaMapMarkerAlt, FaCalendarAlt, FaUsers,
 import Avatar from '../components/ui/Avatar';
 import Rating from '../components/ui/Rating';
 import Badge from '../components/ui/Badge';
-import { featuredListings, campusRides, testimonials, trendingItems, trendingRide } from '../api/landingMock';
+import { landingFeatured, landingTrendingItems, landingTrendingRide, landingCampusRides, landingTestimonials, formatTimeAgo } from '../data';
 
 const ProductPreview = ({ item }) => (
   <Link to={`/product/${item.product_id}`} className="surface-card-hover overflow-hidden group cursor-pointer">
     <div className="aspect-[4/3] bg-navy-100 overflow-hidden">
       {item.image ? (
-        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-navy-300">No image</div>'; }} />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-navy-300">No image</div>
       )}
@@ -19,7 +19,7 @@ const ProductPreview = ({ item }) => (
     <div className="p-4">
       <div className="flex items-start justify-between mb-2">
         <Badge variant={item.condition === 'Like New' || item.condition === 'New' ? 'success' : 'info'}>{item.condition}</Badge>
-        <span className="text-xs text-navy-400">{Math.floor((Date.now() - new Date(item.created_at).getTime()) / 3600000)}h ago</span>
+        <span className="text-xs text-navy-400">{formatTimeAgo(item.created_at)}</span>
       </div>
       <h3 className="font-semibold text-navy-800 text-sm mb-1 truncate group-hover:text-primary-600 transition-colors">{item.title}</h3>
       <div className="flex items-center justify-between mb-2">
@@ -36,6 +36,22 @@ const ProductPreview = ({ item }) => (
     </div>
   </Link>
 );
+
+import PropTypes from 'prop-types';
+
+ProductPreview.propTypes = {
+  item: PropTypes.shape({
+    product_id: PropTypes.string,
+    title: PropTypes.string,
+    price: PropTypes.number,
+    condition: PropTypes.string,
+    image: PropTypes.string,
+    location: PropTypes.string,
+    created_at: PropTypes.string,
+    seller_name: PropTypes.string,
+    seller_rating: PropTypes.number,
+  }),
+};
 
 const RidePreview = ({ ride }) => (
   <Link to={`/ride/${ride.ride_id}`} className="surface-card-hover p-4 group cursor-pointer">
@@ -69,6 +85,21 @@ const RidePreview = ({ ride }) => (
     </button>
   </Link>
 );
+
+RidePreview.propTypes = {
+  ride: PropTypes.shape({
+    ride_id: PropTypes.string,
+    driver_name: PropTypes.string,
+    driver_rating: PropTypes.number,
+    vehicle_details: PropTypes.string,
+    fare_per_seat: PropTypes.number,
+    origin: PropTypes.string,
+    destination: PropTypes.string,
+    date_time: PropTypes.string,
+    seats_available: PropTypes.number,
+    seats_total: PropTypes.number,
+  }),
+};
 
 const Landing = () => {
   const { user } = useAuth();
@@ -118,10 +149,10 @@ const Landing = () => {
                   </span>
                 </div>
                 <div className="space-y-3">
-                  {trendingItems.map(item => (
+                  {landingTrendingItems.map(item => (
                     <div key={item.id} className="flex items-center space-x-3 p-2 rounded-xl hover:bg-navy-50 transition-colors cursor-pointer">
                       <div className="w-16 h-16 rounded-xl bg-navy-100 overflow-hidden flex-shrink-0">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center text-navy-300">No image</div>'; }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-navy-800 truncate">{item.title}</p>
@@ -136,10 +167,10 @@ const Landing = () => {
                       <FaCar size={16} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-navy-500">Ride to {trendingRide.destination}</p>
-                      <p className="text-xs text-navy-400">{trendingRide.time} · {trendingRide.fare}</p>
+                      <p className="text-xs font-medium text-navy-500">Ride to {landingTrendingRide.destination}</p>
+                      <p className="text-xs text-navy-400">{landingTrendingRide.time} · {landingTrendingRide.fare}</p>
                     </div>
-                    <span className="text-xs font-semibold text-navy-500">{trendingRide.seats}</span>
+                    <span className="text-xs font-semibold text-navy-500">{landingTrendingRide.seats}</span>
                   </div>
                 </div>
                 <div className="absolute -bottom-3 -right-3 bg-white rounded-xl border border-navy-100 shadow-dropdown px-4 py-3">
@@ -181,7 +212,7 @@ const Landing = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredListings.map(item => <ProductPreview key={item.product_id} item={item} />)}
+            {landingFeatured.map(item => <ProductPreview key={item.product_id} item={item} />)}
           </div>
           <div className="text-center mt-8 sm:hidden">
             <Link to="/marketplace" className="btn-outline">View all listings</Link>
@@ -203,7 +234,7 @@ const Landing = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {campusRides.map(ride => <RidePreview key={ride.ride_id} ride={ride} />)}
+            {landingCampusRides.map(ride => <RidePreview key={ride.ride_id} ride={ride} />)}
           </div>
           <div className="text-center mt-8 sm:hidden">
             <Link to="/rides" className="btn-outline">Explore rides</Link>
@@ -275,7 +306,7 @@ const Landing = () => {
             <h2 className="section-title">Real stories from campus</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {testimonials.map((t, i) => (
+            {landingTestimonials.map((t, i) => (
               <div key={i} className="surface-card p-6 relative">
                 <FaQuoteLeft className="text-primary-200 text-2xl mb-3" />
                 <p className="text-sm text-navy-600 leading-relaxed mb-5">{t.text}</p>

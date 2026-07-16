@@ -21,7 +21,10 @@ const ProductDetails = () => {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
-  useEffect(() => { fetchProduct(); }, [id]);
+  useEffect(() => {
+    fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const fetchProduct = async () => {
     setLoading(true);
@@ -32,7 +35,7 @@ const ProductDetails = () => {
         try {
           const { data: wl } = await getWishlist();
           setIsInWishlist(wl.some(item => item.product_id === id));
-        } catch {}
+        } catch { /* not authenticated */ }
       }
     } catch (error) { navigate('/marketplace'); }
     finally { setLoading(false); }

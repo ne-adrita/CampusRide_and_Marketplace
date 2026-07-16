@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import PropTypes from 'prop-types';
 
 const Input = forwardRef(({ label, error, className = '', ...props }, ref) => {
   return (
@@ -15,4 +16,11 @@ const Input = forwardRef(({ label, error, className = '', ...props }, ref) => {
 });
 
 Input.displayName = 'Input';
+
+Input.propTypes = {
+  label: PropTypes.string,
+  error: PropTypes.string,
+  className: PropTypes.string,
+};
+
 export default Input;
