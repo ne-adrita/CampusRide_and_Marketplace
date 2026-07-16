@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/CampusRide_and_Marketplace/',
   server: {
     port: 3000,
     proxy: {
