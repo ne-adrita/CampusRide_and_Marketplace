@@ -1,7 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const IS_PREVIEW = import.meta.env.VITE_PREVIEW_MODE === 'true';
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+
+if (IS_PREVIEW) {
+  console.info('[Preview Mode] Using local mock data. No backend required.');
+}
 
 if (!VITE_API_URL) {
   if (import.meta.env.PROD) {
@@ -20,7 +25,20 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    if (IS_PREVIEW) {
+      const { handleMockRequest } = await import('./mockData');
+      const mockResponse = handleMockRequest(config);
+      if (mockResponse) {
+        if (mockResponse.status === 404) {
+          return Promise.reject({ __isMock: true, response: { data: mockResponse.data, status: 404, statusText: 'Not Found', headers: {}, config } });
+        }
+        if (mockResponse.status === 400) {
+          return Promise.reject({ __isMock: true, response: { data: mockResponse.data, status: 400, statusText: 'Bad Request', headers: {}, config } });
+        }
+        return Promise.reject({ __isMock: true, response: { data: mockResponse, status: 200, statusText: 'OK', headers: {}, config } });
+      }
+    }
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,6 +51,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.__isMock) return error.response;
     if (!error.response) return Promise.reject(error);
     
     const message = error.response?.data?.message || 'Something went wrong';

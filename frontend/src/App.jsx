@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -25,6 +25,7 @@ import Profile from './pages/Profile';
 import Wishlist from './pages/Wishlist';
 import Settings from './pages/Settings';
 import Admin from './pages/Admin';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   return (
@@ -62,7 +63,7 @@ const App = () => {
             <Route path="/admin" element={<Admin />} />
           </Route>
           
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </AuthProvider>

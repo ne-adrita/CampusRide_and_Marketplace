@@ -2,20 +2,21 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
-const IS_DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
+const IS_PREVIEW = import.meta.env.VITE_PREVIEW_MODE === 'true';
 
 const AuthContext = createContext();
 
-const demoUser = IS_DEMO_MODE ? {
-  user_id: 'demo123',
-  name: 'Demo Student',
-  email: 'demo@university.edu',
-  studentId: 'STU-2024-001',
+const previewUser = IS_PREVIEW ? {
+  user_id: 'user_001',
+  name: 'Alex Student',
+  email: 'alex@university.edu',
+  studentId: 'STU-2024-042',
   verified: true,
   role: 'student',
   avatar: null,
-  phone: '+1-555-0123',
-  rating: 4.5,
+  phone: '+1-555-0100',
+  bio: 'CS junior. Love hiking and photography.',
+  rating: 4.8,
 } : null;
 
 export const AuthProvider = ({ children }) => {
@@ -24,8 +25,8 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
-    if (IS_DEMO_MODE) {
-      setUser(demoUser);
+    if (IS_PREVIEW) {
+      setUser(previewUser);
       setLoading(false);
       return;
     }
@@ -59,6 +60,11 @@ export const AuthProvider = ({ children }) => {
       toast.success('Welcome back!');
       return { success: true };
     } catch (error) {
+      if (IS_PREVIEW && !error.response) {
+        setUser(previewUser);
+        toast.success('Welcome back!');
+        return { success: true };
+      }
       return { success: false, error: error.response?.data?.message || 'Network error. Backend unreachable.' };
     }
   };
@@ -78,6 +84,11 @@ export const AuthProvider = ({ children }) => {
       toast.success('Registration successful! Please wait for admin verification.');
       return { success: true };
     } catch (error) {
+      if (IS_PREVIEW && !error.response) {
+        setUser(previewUser);
+        toast.success('Registered successfully!');
+        return { success: true };
+      }
       return { success: false, error: error.response?.data?.message || 'Network error. Backend unreachable.' };
     }
   };
