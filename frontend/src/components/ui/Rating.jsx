@@ -2,7 +2,7 @@ import React from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 const Rating = ({ value, max = 5, size = 'md', showValue = false }) => {
-  const sizes = { sm: 'text-sm', md: 'text-base', lg: 'text-xl' };
+  const sizes = { xs: 'text-[10px]', sm: 'text-sm', md: 'text-base', lg: 'text-xl' };
   const stars = [];
   const fullStars = Math.floor(value);
   const hasHalfStar = value % 1 >= 0.5;

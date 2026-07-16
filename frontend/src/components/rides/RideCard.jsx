@@ -1,54 +1,88 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Avatar from '../ui/Avatar';
 import Rating from '../ui/Rating';
-import { FaMapMarkerAlt, FaCalendarAlt, FaUsers } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaCar } from 'react-icons/fa';
 import { format } from 'date-fns';
 
 const RideCard = ({ ride }) => {
+  const navigate = useNavigate();
+
+  const handleBook = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/ride/${ride.ride_id}`);
+  };
+
+  const handleCardClick = () => {
+    navigate(`/ride/${ride.ride_id}`);
+  };
+
   return (
-    <Link to={`/ride/${ride.ride_id}`}>
-      <Card className="overflow-hidden hover:shadow-card-hover transition h-full p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <Avatar name={ride.driver_name} size="md" />
-            <div>
-              <p className="font-medium">{ride.driver_name}</p>
-              <Rating value={ride.driver_rating || 0} size="sm" showValue />
+    <div className="surface-card-hover p-4 group cursor-pointer" onClick={handleCardClick}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2.5">
+          <Avatar name={ride.driver_name} size="md" />
+          <div>
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-semibold text-navy-800 group-hover:text-primary-600 transition-colors">{ride.driver_name}</p>
+              <Rating value={ride.driver_rating || 0} size="xs" showValue />
             </div>
-          </div>
-          <Badge variant={ride.status === 'active' ? 'success' : 'warning'}>
-            {ride.seats_available} seats left
-          </Badge>
-        </div>
-
-        <div className="mt-3 space-y-2">
-          <div className="flex items-center text-sm">
-            <FaMapMarkerAlt className="text-primary-600 mr-2" />
-            <span className="font-medium">{ride.origin}</span>
-            <span className="mx-2 text-gray-400">→</span>
-            <span className="font-medium">{ride.destination}</span>
-          </div>
-
-          <div className="flex items-center text-sm text-gray-600">
-            <FaCalendarAlt className="mr-2" />
-            <span>{format(new Date(ride.date_time), 'EEE, MMM d • h:mm a')}</span>
-          </div>
-
-          <div className="flex items-center text-sm text-gray-600">
-            <FaUsers className="mr-2" />
-            <span>{ride.seats_available} of {ride.seats_total} seats available</span>
+            <p className="text-xs text-navy-400 flex items-center">
+              <FaCar className="mr-1" size={10} />
+              {ride.vehicle_details || 'Car'}
+            </p>
           </div>
         </div>
-
-        <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
-          <span className="font-bold text-primary-600">${ride.fare_per_seat} / seat</span>
-          <Badge variant="info">{ride.vehicle_details || 'Car'}</Badge>
+        <div className="text-right">
+          <p className="text-lg font-bold text-primary-600">${ride.fare_per_seat}</p>
+          <p className="text-[10px] text-navy-400 font-medium">per seat</p>
         </div>
-      </Card>
-    </Link>
+      </div>
+
+      {/* Route visual */}
+      <div className="flex items-center space-x-2 mb-3 text-sm bg-navy-50 rounded-xl p-3">
+        <div className="flex-1 text-right">
+          <p className="font-semibold text-navy-700">{ride.origin}</p>
+        </div>
+        <div className="flex flex-col items-center px-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-primary-400 border-2 border-white shadow-sm" />
+          <div className="w-0.5 h-6 bg-primary-300" />
+          <FaCar className="text-primary-400" size={10} />
+          <div className="w-0.5 h-6 bg-primary-300" />
+          <div className="w-2.5 h-2.5 rounded-full bg-primary-400 border-2 border-white shadow-sm" />
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-navy-700">{ride.destination}</p>
+        </div>
+      </div>
+
+      {/* Meta */}
+      <div className="flex items-center justify-between text-xs text-navy-400 mb-3">
+        <span>
+          <FaCalendarAlt className="inline mr-1" size={10} />
+          {format(new Date(ride.date_time), 'EEE, MMM d • h:mm a')}
+        </span>
+        <span className={ride.seats_available > 0 ? 'text-success-600 font-medium' : 'text-red-500 font-medium'}>
+          <FaUsers className="inline mr-1" size={10} />
+          {ride.seats_available}/{ride.seats_total} seats
+        </span>
+      </div>
+
+      {/* Book CTA */}
+      {ride.seats_available > 0 ? (
+        <button onClick={handleBook} className="w-full py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 active:bg-primary-700 transition-all shadow-sm">
+          Book ride
+        </button>
+      ) : (
+        <div className="w-full py-2.5 bg-navy-100 text-navy-400 rounded-xl text-sm font-semibold text-center cursor-not-allowed">
+          Fully booked
+        </div>
+      )}
+    </div>
   );
 };
 
