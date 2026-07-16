@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
+import { getWishlist } from '../services/wishlistService';
 import Card from '../components/ui/Card';
 import ProductCard from '../components/marketplace/ProductCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -13,7 +13,7 @@ const Wishlist = () => {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const { data } = await api.get('/wishlist');
+        const { data } = await getWishlist();
         setItems(data);
       } catch (error) { console.error('Error fetching wishlist:', error); }
       finally { setLoading(false); }
@@ -24,13 +24,13 @@ const Wishlist = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
-        <h1 className="text-3xl font-bold mb-6">Your Wishlist</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-6">Your Wishlist</h1>
         {items.length === 0 ? (
           <Card className="p-12 text-center">
-            <FaHeart className="text-gray-300 text-5xl mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-700">Your wishlist is empty</h3>
+            <FaHeart className="text-navy-200 text-5xl mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-navy-600">Your wishlist is empty</h3>
             <Link to="/marketplace" className="btn-primary inline-block mt-4">Browse Marketplace</Link>
           </Card>
         ) : (

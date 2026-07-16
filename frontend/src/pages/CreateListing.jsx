@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import { getCategories, createProduct } from '../services/productService';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -23,7 +23,7 @@ const CreateListing = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await api.get('/categories');
+        const { data } = await getCategories();
         setCategories(data);
         if (data.length > 0) setFormData(prev => ({ ...prev, category_id: data[0].category_id }));
       } catch (error) { console.error('Error fetching categories:', error); }
@@ -51,7 +51,7 @@ const CreateListing = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await api.post('/products', { ...formData, price: Number(formData.price) });
+      await createProduct({ ...formData, price: Number(formData.price) });
       toast.success('Listing created successfully!');
       navigate('/marketplace');
     } catch (error) {
@@ -63,26 +63,26 @@ const CreateListing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom max-w-2xl">
-        <h1 className="text-3xl font-bold mb-6">Create New Listing</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-6">Create New Listing</h1>
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input label="Title" name="title" value={formData.title} onChange={handleChange} required error={errors.title} />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea name="description" rows="4" value={formData.description} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none" />
+              <label className="block text-sm font-medium text-navy-700 mb-1">Description</label>
+              <textarea name="description" rows="4" value={formData.description} onChange={handleChange} className="w-full px-4 py-2 border border-navy-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none" />
             </div>
             <Input label="Price ($)" type="number" name="price" value={formData.price} onChange={handleChange} required error={errors.price} min="0" step="0.01" />
-            
-            <select name="condition" value={formData.condition} onChange={handleChange} className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none ${errors.condition ? 'border-red-500' : 'border-gray-300'}`}>
+
+            <select name="condition" value={formData.condition} onChange={handleChange} className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none ${errors.condition ? 'border-red-500' : 'border-navy-200'}`}>
               <option value="New">New</option>
               <option value="Like New">Like New</option>
               <option value="Good">Good</option>
               <option value="Fair">Fair</option>
             </select>
 
-            <select name="category_id" value={formData.category_id} onChange={handleChange} className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none ${errors.category_id ? 'border-red-500' : 'border-gray-300'}`}>
+            <select name="category_id" value={formData.category_id} onChange={handleChange} className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 outline-none ${errors.category_id ? 'border-red-500' : 'border-navy-200'}`}>
               <option value="">Select a category</option>
               {categories.map(cat => <option key={cat.category_id} value={cat.category_id}>{cat.name}</option>)}
             </select>

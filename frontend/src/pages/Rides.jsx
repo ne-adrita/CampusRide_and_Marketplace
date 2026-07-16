@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
+import { getRides } from '../services/rideService';
 import RideCard from '../components/rides/RideCard';
 import RideFilters from '../components/rides/RideFilters';
 import Pagination from '../components/ui/Pagination';
@@ -18,7 +18,7 @@ const Rides = () => {
   const fetchRides = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/rides', { params: { ...filters, page: pagination.page, limit: pagination.limit } });
+      const { data } = await getRides({ ...filters, page: pagination.page, limit: pagination.limit });
       setRides(data.rides);
       setPagination(data.pagination);
     } catch (error) { console.error('Error fetching rides:', error); }
@@ -36,21 +36,21 @@ const Rides = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Ride Sharing</h1>
+          <h1 className="text-3xl font-bold text-navy-800">Ride Sharing</h1>
           <Link to="/create-ride" className="btn-primary mt-4 md:mt-0">+ Offer a Ride</Link>
         </div>
 
         <RideFilters filters={filters} onFilterChange={handleFilterChange} onClearFilters={handleClearFilters} />
 
         <div className="mt-6">
-          <p className="text-gray-600 mb-4">{pagination.total} rides available</p>
+          <p className="text-navy-400 mb-4">{pagination.total} rides available</p>
           {loading ? <LoadingSpinner /> : rides.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl">
-              <FaSearch className="text-gray-300 text-5xl mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700">No rides found</h3>
+            <div className="text-center py-12 surface-card">
+              <FaSearch className="text-navy-200 text-5xl mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-navy-600">No rides found</h3>
               <button onClick={handleClearFilters} className="btn-primary mt-4">Clear filters</button>
             </div>
           ) : (

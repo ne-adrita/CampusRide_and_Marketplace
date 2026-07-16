@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
+import { getProducts, getCategories } from '../services/productService';
 import ProductCard from '../components/marketplace/ProductCard';
 import ProductFilters from '../components/marketplace/ProductFilters';
 import Pagination from '../components/ui/Pagination';
@@ -19,7 +19,7 @@ const Marketplace = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await api.get('/categories');
+      const { data } = await getCategories();
       setCategories(data);
     } catch (error) { console.error('Error fetching categories:', error); }
   };
@@ -27,7 +27,7 @@ const Marketplace = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/products', { params: { ...filters, page: pagination.page, limit: pagination.limit } });
+      const { data } = await getProducts({ ...filters, page: pagination.page, limit: pagination.limit });
       setProducts(data.products);
       setPagination(data.pagination);
     } catch (error) { console.error('Error fetching products:', error); }
@@ -45,21 +45,21 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Marketplace</h1>
+          <h1 className="text-3xl font-bold text-navy-800">Marketplace</h1>
           <Link to="/create-listing" className="btn-primary mt-4 md:mt-0">+ List Your Item</Link>
         </div>
 
         <ProductFilters filters={filters} categories={categories} onFilterChange={handleFilterChange} onClearFilters={handleClearFilters} />
 
         <div className="mt-6">
-          <p className="text-gray-600 mb-4">{pagination.total} items found</p>
+          <p className="text-navy-400 mb-4">{pagination.total} items found</p>
           {loading ? <LoadingSpinner /> : products.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-xl">
-              <FaSearch className="text-gray-300 text-5xl mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700">No items found</h3>
+            <div className="text-center py-12 surface-card">
+              <FaSearch className="text-navy-200 text-5xl mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-navy-600">No items found</h3>
               <button onClick={handleClearFilters} className="btn-primary mt-4">Clear all filters</button>
             </div>
           ) : (

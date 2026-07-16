@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import { getDashboardStats } from '../services/userService';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -15,7 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const { data } = await api.get('/users/stats');
+        const { data } = await getDashboardStats();
         setStats(data);
       } catch (error) {
         console.error('Error fetching dashboard:', error);
@@ -36,12 +36,12 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {user?.name?.split(' ')[0] || 'Student'}!</h1>
-            <p className="text-gray-600">Here's what's happening on campus today.</p>
+            <h1 className="text-3xl font-bold text-navy-800">Welcome back, {user?.name?.split(' ')[0] || 'Student'}!</h1>
+            <p className="text-navy-400">Here&apos;s what&apos;s happening on campus today.</p>
           </div>
           <Link to="/marketplace" className="btn-primary">Browse Campus</Link>
         </div>
@@ -51,7 +51,7 @@ const Dashboard = () => {
             <Card key={index} className="p-6">
               <div className="flex items-center space-x-4">
                 <div className={`p-3 rounded-lg ${stat.bg}`}><stat.icon className={`${stat.color} text-xl`} /></div>
-                <div><div className="text-2xl font-bold">{stat.value}</div><div className="text-sm text-gray-600">{stat.label}</div></div>
+                <div><div className="text-2xl font-bold text-navy-800">{stat.value}</div><div className="text-sm text-navy-400">{stat.label}</div></div>
               </div>
             </Card>
           ))}
@@ -60,16 +60,16 @@ const Dashboard = () => {
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
             <Card>
-              <Card.Header><h3 className="font-semibold">Recent Activity</h3></Card.Header>
+              <Card.Header><h3 className="font-semibold text-navy-700">Recent Activity</h3></Card.Header>
               <Card.Body>
-                <p className="text-gray-500 text-center py-8">No recent activity. Start exploring!</p>
+                <p className="text-navy-400 text-center py-8">No recent activity. Start exploring!</p>
               </Card.Body>
             </Card>
           </div>
 
           <div>
             <Card>
-              <Card.Header><h3 className="font-semibold">Quick Actions</h3></Card.Header>
+              <Card.Header><h3 className="font-semibold text-navy-700">Quick Actions</h3></Card.Header>
               <Card.Body className="space-y-3">
                 <Link to="/create-listing" className="block w-full btn-primary text-center">List an Item</Link>
                 <Link to="/create-ride" className="block w-full btn-secondary text-center">Offer a Ride</Link>
@@ -80,7 +80,7 @@ const Dashboard = () => {
 
             <Card className="mt-6">
               <Card.Body className="flex items-center justify-between">
-                <div><p className="text-sm font-medium">Verification Status</p><p className="text-xs text-gray-500">{user?.verified ? '✅ Verified' : '⏳ Pending'}</p></div>
+                <div><p className="text-sm font-medium text-navy-700">Verification Status</p><p className="text-xs text-navy-400">{user?.verified ? 'Verified' : 'Pending'}</p></div>
                 <Badge variant={user?.verified ? 'success' : 'warning'}>{user?.verified ? 'Verified' : 'Pending'}</Badge>
               </Card.Body>
             </Card>

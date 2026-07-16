@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import { createRide } from '../services/rideService';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -46,7 +46,7 @@ const CreateRide = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await api.post('/rides', { ...formData, seats_total: Number(formData.seats_total), fare_per_seat: Number(formData.fare_per_seat) });
+      await createRide({ ...formData, seats_total: Number(formData.seats_total), fare_per_seat: Number(formData.fare_per_seat) });
       toast.success('Ride posted successfully!');
       navigate('/rides');
     } catch (error) {
@@ -58,9 +58,9 @@ const CreateRide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom max-w-2xl">
-        <h1 className="text-3xl font-bold mb-6">Offer a Ride</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-6">Offer a Ride</h1>
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input label="Origin" name="origin" value={formData.origin} onChange={handleChange} placeholder="e.g., Dhanmondi 27" required error={errors.origin} />

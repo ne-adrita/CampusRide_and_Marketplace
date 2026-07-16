@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import { getUserById, getUserListings } from '../services/userService';
 import Card from '../components/ui/Card';
 import Avatar from '../components/ui/Avatar';
 import Rating from '../components/ui/Rating';
@@ -30,8 +30,8 @@ const Profile = () => {
     setLoading(true);
     try {
       const [userRes, listingsRes] = await Promise.all([
-        api.get(`/users/${userId}`),
-        api.get(`/users/${userId}/listings`),
+        getUserById(userId),
+        getUserListings(userId),
       ]);
       setProfileUser(userRes.data);
       setListings(listingsRes.data || []);
@@ -40,10 +40,10 @@ const Profile = () => {
   };
 
   if (loading) return <LoadingSpinner />;
-  if (!profileUser) return <div>User not found</div>;
+  if (!profileUser) return <div className="container-custom py-8"><div className="surface-card p-8 text-center text-navy-400">User not found</div></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
         <Card className="overflow-hidden">
           <div className="h-48 bg-gradient-to-r from-primary-500 to-primary-700 relative">
@@ -54,7 +54,7 @@ const Profile = () => {
               <div className="flex items-center space-x-4">
                 <Avatar name={profileUser.name} src={profileUser.profile_pic} size="xl" className="border-4 border-white" />
                 <div className="mt-8">
-                  <h1 className="text-2xl font-bold">{profileUser.name}</h1>
+                  <h1 className="text-2xl font-bold text-navy-800">{profileUser.name}</h1>
                   <div className="flex items-center space-x-3">
                     <Rating value={profileUser.rating_avg || 0} size="sm" showValue />
                     {profileUser.verified && <Badge variant="success">Verified Student</Badge>}
@@ -71,15 +71,15 @@ const Profile = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-4 mt-6">
-              <div className="text-center p-4 bg-gray-50 rounded-lg"><div className="text-2xl font-bold">{profileUser.rating_avg?.toFixed(1) || '0.0'}</div><div className="text-sm text-gray-600">Rating</div></div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg"><div className="text-2xl font-bold">{listings.length}</div><div className="text-sm text-gray-600">Listings</div></div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg"><div className="text-2xl font-bold">{profileUser.ride_count || 0}</div><div className="text-sm text-gray-600">Rides</div></div>
+              <div className="text-center p-4 bg-navy-50 rounded-lg"><div className="text-2xl font-bold text-navy-800">{profileUser.rating_avg?.toFixed(1) || '0.0'}</div><div className="text-sm text-navy-400">Rating</div></div>
+              <div className="text-center p-4 bg-navy-50 rounded-lg"><div className="text-2xl font-bold text-navy-800">{listings.length}</div><div className="text-sm text-navy-400">Listings</div></div>
+              <div className="text-center p-4 bg-navy-50 rounded-lg"><div className="text-2xl font-bold text-navy-800">{profileUser.ride_count || 0}</div><div className="text-sm text-navy-400">Rides</div></div>
             </div>
 
             {profileUser.bio && (
-              <div className="mt-6"><h3 className="font-semibold text-sm text-gray-700">About</h3><p className="text-gray-600 mt-1">{profileUser.bio}</p></div>
+              <div className="mt-6"><h3 className="font-semibold text-sm text-navy-700">About</h3><p className="text-navy-400 mt-1">{profileUser.bio}</p></div>
             )}
-            <div className="mt-4 flex items-center space-x-2 text-sm text-gray-500">
+            <div className="mt-4 flex items-center space-x-2 text-sm text-navy-400">
               <FaCalendarAlt size={14} /><span>Member since {format(new Date(profileUser.created_at), 'MMMM yyyy')}</span>
             </div>
           </div>

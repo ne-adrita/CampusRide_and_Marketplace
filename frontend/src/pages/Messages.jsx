@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import { getConversations, getMessages, sendMessage as sendMsg } from '../services/messageService';
+import { getUserById } from '../services/userService';
 import Card from '../components/ui/Card';
 import Avatar from '../components/ui/Avatar';
 import Input from '../components/ui/Input';
@@ -25,7 +26,7 @@ const Messages = () => {
 
   const fetchMessages = useCallback(async (userId) => {
     try {
-      const { data } = await api.get(`/messages/${userId}`);
+      const { data } = await getMessages(userId);
       setMessages(data);
     } catch (error) { console.error('Error fetching messages:', error); }
   }, []);
@@ -38,7 +39,7 @@ const Messages = () => {
       return;
     }
     try {
-      const { data } = await api.get(`/users/${userId}`);
+      const { data } = await getUserById(userId);
       const newConv = {
         user_id: data.user_id || data._id || data.id,
         name: data.name,
@@ -74,7 +75,7 @@ const Messages = () => {
 
   const fetchConversations = async () => {
     try {
-      const { data } = await api.get('/messages/conversations');
+      const { data } = await getConversations();
       setConversations(data);
       const userId = searchParams.get('user');
       if (!userId && data.length > 0) {
@@ -90,10 +91,7 @@ const Messages = () => {
     if (!newMessage.trim() || !currentConversation) return;
     setSending(true);
     try {
-      const { data } = await api.post('/messages', {
-        receiver_id: currentConversation.user_id,
-        content: newMessage.trim(),
-      });
+      const { data } = await sendMsg(currentConversation.user_id, newMessage.trim());
       setMessages(prev => [...prev, data]);
       setNewMessage('');
       fetchConversations();
@@ -106,22 +104,22 @@ const Messages = () => {
   if (loading) return <LoadingSpinner fullScreen />;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-navy-50 py-8">
       <div className="container-custom">
-        <h1 className="text-3xl font-bold mb-6">Messages</h1>
+        <h1 className="text-3xl font-bold text-navy-800 mb-6">Messages</h1>
         <Card className="overflow-hidden">
           <div className="flex h-[600px]">
-            <div className="w-full md:w-1/3 border-r border-gray-200 overflow-y-auto">
-              <div className="p-4 border-b border-gray-200 font-semibold">Conversations</div>
+            <div className="w-full md:w-1/3 border-r border-navy-100 overflow-y-auto">
+              <div className="p-4 border-b border-navy-100 font-semibold text-navy-700">Conversations</div>
               {conversations.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No conversations yet</div>
+                <div className="p-8 text-center text-navy-400">No conversations yet</div>
               ) : (
                 conversations.map((conv) => (
-                  <button key={conv.user_id} onClick={() => { setCurrentConversation(conv); fetchMessages(conv.user_id); }} className={`w-full flex items-center space-x-3 p-4 hover:bg-gray-50 border-b border-gray-100 ${currentConversation?.user_id === conv.user_id ? 'bg-primary-50' : ''}`}>
+                  <button key={conv.user_id} onClick={() => { setCurrentConversation(conv); fetchMessages(conv.user_id); }} className={`w-full flex items-center space-x-3 p-4 hover:bg-navy-50 border-b border-navy-100 ${currentConversation?.user_id === conv.user_id ? 'bg-primary-50' : ''}`}>
                     <Avatar name={conv.name} src={conv.profile_pic} size="md" />
                     <div className="flex-1 text-left">
-                      <div className="font-medium">{conv.name}</div>
-                      <p className="text-sm text-gray-500 truncate">{conv.last_message || 'No messages'}</p>
+                      <div className="font-medium text-navy-700">{conv.name}</div>
+                      <p className="text-sm text-navy-400 truncate">{conv.last_message || 'No messages'}</p>
                     </div>
                   </button>
                 ))
@@ -131,28 +129,28 @@ const Messages = () => {
             <div className="hidden md:flex flex-1 flex-col">
               {currentConversation ? (
                 <>
-                  <div className="p-4 border-b border-gray-200 flex items-center space-x-3">
+                  <div className="p-4 border-b border-navy-100 flex items-center space-x-3">
                     <Avatar name={currentConversation.name} src={currentConversation.profile_pic} size="md" />
-                    <div><div className="font-medium">{currentConversation.name}</div></div>
+                    <div><div className="font-medium text-navy-700">{currentConversation.name}</div></div>
                   </div>
                   <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {messages.map((msg) => (
                       <div key={msg.message_id} className={`flex ${msg.sender_id === user?.user_id ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%] px-4 py-2 rounded-lg ${msg.sender_id === user?.user_id ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
+                        <div className={`max-w-[70%] px-4 py-2 rounded-lg ${msg.sender_id === user?.user_id ? 'bg-primary-600 text-white' : 'bg-navy-100 text-navy-800'}`}>
                           <p className="text-sm">{msg.content}</p>
-                          <p className={`text-xs mt-1 ${msg.sender_id === user?.user_id ? 'text-primary-200' : 'text-gray-500'}`}>{format(new Date(msg.sent_at), 'h:mm a')}</p>
+                          <p className={`text-xs mt-1 ${msg.sender_id === user?.user_id ? 'text-primary-200' : 'text-navy-400'}`}>{format(new Date(msg.sent_at), 'h:mm a')}</p>
                         </div>
                       </div>
                     ))}
                     <div ref={messagesEndRef} />
                   </div>
-                  <form onSubmit={sendMessage} className="p-4 border-t border-gray-200 flex space-x-2">
+                  <form onSubmit={sendMessage} className="p-4 border-t border-navy-100 flex space-x-2">
                     <Input type="text" placeholder="Type a message..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} className="flex-1" />
                     <Button type="submit" isLoading={sending} className="px-4"><FaPaperPlane /></Button>
                   </form>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center text-gray-500">
+                <div className="flex-1 flex items-center justify-center text-navy-400">
                   <div className="text-center"><p className="text-lg">Select a conversation</p></div>
                 </div>
               )}

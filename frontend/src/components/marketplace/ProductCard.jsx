@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Rating from '../ui/Rating';
 import Avatar from '../ui/Avatar';
 import { FaHeart, FaRegHeart, FaMapMarkerAlt } from 'react-icons/fa';
-import api from '../../api/axios';
+import { addToWishlist, removeFromWishlist } from '../../services/wishlistService';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,18 +20,16 @@ const ProductCard = ({ product }) => {
     if (!isAuthenticated) { toast.error('Please login to add to wishlist'); return; }
     try {
       if (isInWishlist) {
-        await api.delete(`/products/${product.product_id}/wishlist`);
+        await removeFromWishlist(product.product_id);
         setIsInWishlist(false);
         toast.success('Removed from wishlist');
       } else {
-        await api.post(`/products/${product.product_id}/wishlist`);
+        await addToWishlist(product.product_id);
         setIsInWishlist(true);
         toast.success('Added to wishlist');
       }
     } catch (error) {
-      if (!error.response) {
-        setIsInWishlist(!isInWishlist);
-      }
+      setIsInWishlist(!isInWishlist);
     }
   };
 
@@ -48,18 +46,15 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="surface-card-hover overflow-hidden group cursor-pointer relative" onClick={() => navigate(`/product/${product.product_id}`)}>
-      {/* Image */}
       <div className="aspect-[4/3] bg-navy-100 overflow-hidden relative">
         {product.image ? (
           <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-navy-300">No image</div>
         )}
-        {/* Badge overlay */}
         <div className="absolute top-3 left-3">
           <Badge variant={product.condition === 'New' || product.condition === 'Like New' ? 'success' : 'info'}>{product.condition}</Badge>
         </div>
-        {/* Wishlist heart */}
         <button
           onClick={handleWishlist}
           className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all shadow-sm"
@@ -68,7 +63,6 @@ const ProductCard = ({ product }) => {
         </button>
       </div>
 
-      {/* Details */}
       <div className="p-4">
         <div className="flex items-start justify-between mb-1.5">
           <h3 className="font-semibold text-navy-800 text-sm leading-snug truncate flex-1 group-hover:text-primary-600 transition-colors">

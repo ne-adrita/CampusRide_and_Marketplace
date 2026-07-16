@@ -1,33 +1,24 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../api/axios';
 import toast from 'react-hot-toast';
+import * as authService from '../services/authService';
+import { initData, resetAllData } from '../data';
 
 const IS_PREVIEW = import.meta.env.VITE_PREVIEW_MODE === 'true';
 
 const AuthContext = createContext();
 
-const previewUser = IS_PREVIEW ? {
-  user_id: 'user_001',
-  name: 'Alex Student',
-  email: 'alex@university.edu',
-  studentId: 'STU-2024-042',
-  verified: true,
-  role: 'student',
-  avatar: null,
-  phone: '+1-555-0100',
-  bio: 'CS junior. Love hiking and photography.',
-  rating: 4.8,
-} : null;
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem('campusride_token'));
 
   useEffect(() => {
     if (IS_PREVIEW) {
-      setUser(previewUser);
-      setLoading(false);
+      initData();
+      authService.getMe().then(({ data }) => {
+        setUser({ ...data, user_id: data.user_id });
+        setLoading(false);
+      });
       return;
     }
     if (token) {
@@ -35,69 +26,54 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   const loadUser = async () => {
     try {
-      const { data } = await api.get('/auth/me');
+      const { data } = await authService.getMe();
       setUser({ ...data, user_id: data.user_id || data._id || data.id });
     } catch (error) {
-      if (error.response?.status === 401) {
-        logout();
-      }
+      if (error?.response?.status === 401) logout();
     } finally {
       setLoading(false);
     }
   };
 
   const login = async (email, password) => {
-    try {
-      const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', data.token);
-      setToken(data.token);
-      const userData = { ...data.user, user_id: data.user.user_id || data.user._id || data.user.id };
+    const result = await authService.login(email, password);
+    if (result.success) {
+      const userData = { ...result.data.user, user_id: result.data.user.user_id || result.data.user._id || result.data.user.id };
+      setToken(result.data.token);
       setUser(userData);
       toast.success('Welcome back!');
-      return { success: true };
-    } catch (error) {
-      if (IS_PREVIEW && !error.response) {
-        setUser(previewUser);
-        toast.success('Welcome back!');
-        return { success: true };
-      }
-      return { success: false, error: error.response?.data?.message || 'Network error. Backend unreachable.' };
     }
+    return result;
   };
 
   const register = async (name, email, studentId, password) => {
-    try {
-      const { data } = await api.post('/auth/register', {
-        name,
-        email,
-        studentId,
-        password,
-      });
-      localStorage.setItem('token', data.token);
-      setToken(data.token);
-      const userData = { ...data.user, user_id: data.user.user_id || data.user._id || data.user.id };
+    const result = await authService.register(name, email, studentId, password);
+    if (result.success) {
+      const userData = { ...result.data.user, user_id: result.data.user.user_id || result.data.user._id || result.data.user.id };
+      setToken(result.data.token);
       setUser(userData);
-      toast.success('Registration successful! Please wait for admin verification.');
-      return { success: true };
-    } catch (error) {
-      if (IS_PREVIEW && !error.response) {
-        setUser(previewUser);
-        toast.success('Registered successfully!');
-        return { success: true };
-      }
-      return { success: false, error: error.response?.data?.message || 'Network error. Backend unreachable.' };
+      toast.success('Registration successful!');
     }
+    return result;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('campusride_token');
     setToken(null);
     setUser(null);
     toast.success('Logged out successfully');
+  };
+
+  const resetDemo = () => {
+    resetAllData();
+    authService.getMe().then(({ data }) => {
+      setUser({ ...data, user_id: data.user_id });
+    });
+    toast.success('Demo data reset');
   };
 
   const value = {
@@ -107,6 +83,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    resetDemo,
     isAuthenticated: !!user,
     isVerified: user?.verified || false,
     isAdmin: user?.role === 'admin',
@@ -117,8 +94,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
